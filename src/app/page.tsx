@@ -1,65 +1,104 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 
 export default function Home() {
+  const [email, setEmail] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("https://formspree.io/f/xvzykjqo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email }),
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+        setEmail("");
+      } else {
+        alert("System error. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Connection failed", error);
+      alert("Network connection failed. Please check your internet link.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="relative flex min-h-screen flex-col items-center justify-center p-6 bg-black selection:bg-white/20">
+      {/* Container Utama dengan Efek Animasi Masuk */}
+      <div className="flex flex-col items-center space-y-8 animate-[fadeIn_1.5s_ease-in-out]">
+        
+        {/* Simbol Standalone Athelaemera */}
+        <div className="relative w-40 h-40 md:w-48 md:h-48 transition-transform duration-700 hover:scale-105">
+          <Image
+            src="/logo.svg"
+            alt="Athelaemera Logo"
+            fill
+            priority
+            className="object-contain invert"
+          />
+        </div>
+
+        {/* Visi Makro / Copywriting Premium */}
+        <div className="text-center max-w-md px-4">
+          <h1 className="text-sm md:text-base font-light tracking-[0.3em] text-white/90 uppercase mb-3">
+            Athelaemera
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-xs md:text-sm font-light tracking-wide text-neutral-500 leading-relaxed">
+            Architecting high-performance digital utilities for frictionless collaboration. 
+            Something absolute is brewing.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        {/* Formulir Penampung Email Interaktif */}
+        {isSubmitted ? (
+          <div className="text-center py-4 animate-[fadeIn_0.5s_ease-in-out]">
+            <p className="text-xs font-light tracking-widest text-emerald-400 uppercase">
+              // System Access Requested.
+            </p>
+            <p className="text-[11px] text-neutral-500 mt-1">
+              Your identity has been logged. We will reach out shortly.
+            </p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center gap-2 pt-4 w-full max-w-sm">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your system access code / email"
+              className="w-full bg-neutral-900/50 text-white text-xs font-light px-4 py-3 rounded border border-neutral-800/80 focus:outline-none focus:border-neutral-500 transition-colors placeholder:text-neutral-600 text-center sm:text-left"
+              required
+              disabled={isLoading}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            <button
+              type="submit"
+              className="w-full sm:w-auto whitespace-nowrap bg-white text-black text-xs font-medium px-5 py-3 rounded hover:bg-neutral-200 transition-colors duration-300 disabled:bg-neutral-700 disabled:text-neutral-400"
+              disabled={isLoading}
+            >
+              {isLoading ? "Processing..." : "Request Access"}
+            </button>
+          </form>
+        )}
+
+      </div>
+
+      {/* Footer Hak Cipta Studio Minimalis */}
+      <footer className="absolute bottom-6 text-[10px] font-light tracking-[0.2em] text-neutral-700 uppercase">
+        © {new Date().getFullYear()} Athelaemera. All rights reserved.
+      </footer>
+    </main>
   );
 }
